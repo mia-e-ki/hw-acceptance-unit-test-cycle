@@ -15,6 +15,8 @@ class MoviesController < ApplicationController
     case sort
     when 'title'
       ordering,@title_header = {:title => :asc}, 'hilite'
+    when 'director'
+       ordering, @director_header = {:director => :asc}, 'hilite'
     when 'release_date'
       ordering,@date_header = {:release_date => :asc}, 'hilite'
     end
@@ -53,6 +55,18 @@ class MoviesController < ApplicationController
     flash[:notice] = "#{@movie.title} was successfully updated."
     redirect_to movie_path(@movie)
   end
+   
+   def director
+      @movie = Movie.find(params[:id])
+      @director = @movie.director
+      
+      if @director.blank?
+         flash[:warning] = "'#{@movie.title}' has no director info"
+         redirect_to movies_path and return
+      end
+      
+      @movies = @movie.similar_movies
+   end
 
   def destroy
     @movie = Movie.find(params[:id])
